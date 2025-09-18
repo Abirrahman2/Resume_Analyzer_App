@@ -1,7 +1,7 @@
 from parser import extract_text_from_pdf
 import os
 
-RESUMES_FOLDER="D:\RESUME_DIR"
+RESUMES_FOLDER=r"D:\RESUME_DIR"
 
 
 def main():
