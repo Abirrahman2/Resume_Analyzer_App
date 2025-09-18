@@ -1,7 +1,7 @@
-from pandas.core.construction import extract_array
 
 from parser import extract_text_from_pdf, extract_text_from_docx
 from extractor import extract_contact_info
+from skills import  extract_skills
 import os
 
 RESUMES_FOLDER=r"D:\RESUME_DIR"
@@ -43,9 +43,10 @@ def main():
 
         if extracted_text:
             contact_info=extract_contact_info(extracted_text)
+            found_skills=extract_skills(extracted_text)
             print(f"Email:{contact_info['email']}")
             print(f"Phone:{contact_info['phone']}")
-
+            print(f"Skills Found: {', '.join(found_skills)}")
 
 
 if __name__ == "__main__":
