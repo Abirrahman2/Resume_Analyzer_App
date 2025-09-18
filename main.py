@@ -1,4 +1,7 @@
-from parser import extract_text_from_pdf
+from pandas.core.construction import extract_array
+
+from parser import extract_text_from_pdf, extract_text_from_docx
+from extractor import extract_contact_info
 import os
 
 RESUMES_FOLDER=r"D:\RESUME_DIR"
@@ -20,7 +23,7 @@ def main():
 
     for filename in files:
         file_path = os.path.join(RESUMES_FOLDER, filename)
-
+        extracted_text=""
         print(f"\n{filename}")
         if filename.lower().endswith(".pdf"):
             extracted_text = extract_text_from_pdf(file_path)
@@ -31,11 +34,17 @@ def main():
 
         elif filename.lower().endswith(".docx"):
 
-            print("DOCX file.")
-            # extracted_text = extract_text_from_docx(file_path) # Future code
+             extracted_text = extract_text_from_docx(file_path)
+             if extracted_text:
+                 print("extracted successfully")
 
         else:
-            print(f"Skipping unsupported file type: '{filename}'")
+            print(f"unsupported file type: '{filename}'")
+
+        if extracted_text:
+            contact_info=extract_contact_info(extracted_text)
+            print(f"Email:{contact_info['email']}")
+            print(f"Phone:{contact_info['phone']}")
 
 
 
