@@ -1,22 +1,27 @@
-
+from analyzer import parse_job_description,calculate_match_score
 from parser import extract_text_from_pdf, extract_text_from_docx
 from extractor import extract_contact_info
 from skills import  extract_skills
 import os
 
 RESUMES_FOLDER=r"D:\RESUME_DIR"
-
+JD_FILE_PATH=os.path.join("Job_Description","job_description.txt")
 
 def main():
+
+
+    jd_info=parse_job_description(JD_FILE_PATH)
+    if not jd_info["required_skills"]:
+       print("unable to extract required skills")
+       return
+    print(f"Required Skills are: {jd_info["required_skills"]}")
 
     if not os.path.exists(RESUMES_FOLDER):
         os.makedirs(RESUMES_FOLDER)
         print(f"Created a new folder: '{RESUMES_FOLDER}'. Please place your resumes here.")
         return
 
-
     files = os.listdir(RESUMES_FOLDER)
-
     if not files:
         print(f"files not found in the '{RESUMES_FOLDER}' folder. Please upload resumes.")
         return
@@ -44,9 +49,13 @@ def main():
         if extracted_text:
             contact_info=extract_contact_info(extracted_text)
             found_skills=extract_skills(extracted_text)
+            calculate_score=calculate_match_score(found_skills,jd_info)
             print(f"Email:{contact_info['email']}")
             print(f"Phone:{contact_info['phone']}")
             print(f"Skills Found: {', '.join(found_skills)}")
+            print(f"Obtained score:{calculate_score:.3f}")
+        else:
+            print("Failed to extract data from participant")
 
 
 if __name__ == "__main__":

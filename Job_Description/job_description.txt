@@ -1,0 +1,12 @@
+Job Title: Data Scientist
+
+Responsibilities include developing machine learning models and analyzing large datasets.
+
+Required Skills:
+- Python, R, SQL
+- Data science, machine learning
+- Strong communication and analytical skills
+
+Required Experience:
+- 3+ years of experience in a similar role.
+- Master's degree in a quantitative field.
