@@ -38,11 +38,12 @@ def calculate_match_score(candidate_skills, jd_info):
     candidate_skills_set = set(candidate_skills)
 
     if not required_skills:
-        return 0.0
-
+        return 0.0, [], []
 
     matched_skills = candidate_skills_set.intersection(required_skills)
 
+    missing_skills = required_skills.difference(matched_skills)
+
     score = (len(matched_skills) / len(required_skills)) * 100
 
-    return round(score, 2)
+    return round(score, 2), list(matched_skills), list(missing_skills)
