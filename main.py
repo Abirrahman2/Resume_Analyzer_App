@@ -6,6 +6,7 @@ from extractor import extract_contact_info
 from skills import  extract_skills
 import  csv
 import os
+import pandas as pd
 
 RESUMES_FOLDER=r"D:\RESUME_DIR"
 JD_FILE_PATH=os.path.join("Job_Description","job_description.txt")
@@ -69,13 +70,20 @@ def main():
         else:
             print("Failed to extract data from participant")
     if all_candidate_result:
-        fieldnames = ['filename', 'email', 'phone', 'skills_found','missing_skill', 'match_score']
-        filename = "all_analysis_results.csv"
-        with open(filename,'w',newline='',encoding='utf-8') as csvfile:
+
+        df=pd.DataFrame(all_candidate_result)
+        df=df.sort_values(by='match_score',ascending=False)
+        df.to_csv('analysis_results_by_skills.csv',index=False)
+    else:
+        print("we have no candidates")
+        #fieldnames = ['filename', 'email', 'phone', 'skills_found','missing_skill', 'match_score']
+        #filename = "all_analysis_results.csv"
+
+    """with open(filename,'w',newline='',encoding='utf-8') as csvfile:
 
             writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(all_candidate_result)
+            writer.writerows(all_candidate_result)"""
 
 
 
