@@ -1,11 +1,11 @@
 import openai
+import google.generativeai as genai
 import os
+import json
 from dotenv import load_dotenv
 load_dotenv()
 def analyze_with_llm(resume_text, jd_text):
-
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    print(openai.api_key)
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
     prompt = f"""
     You are a professional resume analyst. Your task is to analyze a resume against a job description.
 
@@ -31,17 +31,22 @@ def analyze_with_llm(resume_text, jd_text):
     """
 
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
-        )
+        model = genai.GenerativeModel('gemini-1.5-flash')  # Or gemini-1.0-pro
+        response = model.generate_content(prompt)
 
-        analysis_json = response.choices[0].message.content.strip()
+        if not response.text:
+            print("Empty response.")
+            return None
 
-        if analysis_json.startswith("```json"):
-            analysis_json = analysis_json[7:-3].strip()
+        analysis_json = response.text.strip()
 
-        return json.loads(analysis_json)
+        if analysis_json.startswith('```json'):
+            analysis_json=analysis_json.replace('```json', '').replace('```', '').strip()
+
+        analysis_data=json.loads(analysis_json)
+
+
+        return analysis_data
 
     except Exception as e:
         print(f"An error occurred with the LLM: {e}")
