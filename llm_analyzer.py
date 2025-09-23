@@ -1,12 +1,11 @@
 import openai
 import os
-
-
+from dotenv import load_dotenv
+load_dotenv()
 def analyze_with_llm(resume_text, jd_text):
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    # Or, for quick testing: openai.api_key = "YOUR_API_KEY"
-
+    print(openai.api_key)
     prompt = f"""
     You are a professional resume analyst. Your task is to analyze a resume against a job description.
 
@@ -33,19 +32,17 @@ def analyze_with_llm(resume_text, jd_text):
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4",  # Or another suitable model like gpt-3.5-turbo
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
 
-        # Extract the JSON string from the response
         analysis_json = response.choices[0].message.content.strip()
 
-        # Clean up any extra text that the LLM might include
         if analysis_json.startswith("```json"):
             analysis_json = analysis_json[7:-3].strip()
 
         return json.loads(analysis_json)
 
     except Exception as e:
-        print(f"An error occurred with the LLM API call: {e}")
+        print(f"An error occurred with the LLM: {e}")
         return None

@@ -1,6 +1,7 @@
 from urllib3.filepost import writer
 
 from analyzer import parse_job_description,calculate_match_score
+from llm_analyzer import analyze_with_llm
 from parser import extract_text_from_pdf, extract_text_from_docx
 from extractor import extract_contact_info
 from skills import  extract_skills
@@ -19,7 +20,12 @@ def main():
        print("unable to extract required skills")
        return
     print(f"Required Skills are: {jd_info["required_skills"]}")
-
+    try:
+        with open(JD_FILE_PATH,'r',encoding='utf-8') as f:
+            jd_text=f.read();
+    except FileNotFoundError:
+        print("job description file not found")
+        return
     if not os.path.exists(RESUMES_FOLDER):
         os.makedirs(RESUMES_FOLDER)
         print(f"Created a new folder: '{RESUMES_FOLDER}'. Please place your resumes here.")
@@ -30,6 +36,7 @@ def main():
         print(f"files not found in the '{RESUMES_FOLDER}' folder. Please upload resumes.")
         return
     all_candidate_result=[]
+    all_candidate_result_by_llm=[]
     for filename in files:
         file_path = os.path.join(RESUMES_FOLDER, filename)
         extracted_text=""
@@ -54,6 +61,20 @@ def main():
             contact_info=extract_contact_info(extracted_text)
             found_skills=extract_skills(extracted_text)
             calculate_score,matched_skills,missing_skills=calculate_match_score(found_skills,jd_info)
+            analysis_data_by_llm=analyze_with_llm(extracted_text,jd_text)
+            if analysis_data_by_llm:
+                candidate_data_by_llm={
+                    'filename': filename,
+                    'match_score': analysis_data_by_llm.get('match_score', 0),
+                    'summary_explanation': analysis_data_by_llm.get('summary_explanation', 'N/A'),
+                    'strengths': ', '.join(analysis_data_by_llm.get('strengths', [])),
+                    'weaknesses': ', '.join(analysis_data_by_llm.get('weaknesses', [])),
+                    'skills_matched': ', '.join(analysis_data_by_llm.get('skills_matched', [])),
+                    'skills_missing': ', '.join(analysis_data_by_llm.get('skills_missing', []))
+
+
+                }
+                all_candidate_result_by_llm.append(candidate_data_by_llm)
             candidate_data={
                 'filename':filename,
                 'email':contact_info['email'],
@@ -78,6 +99,10 @@ def main():
         print("we have no candidates")
         #fieldnames = ['filename', 'email', 'phone', 'skills_found','missing_skill', 'match_score']
         #filename = "all_analysis_results.csv"
+    if all_candidate_result_by_llm:
+        df1=pd.DataFrame(all_candidate_result_by_llm)
+        df1=df1.sort_values(by='match_score',ascending=False)
+        df1.to_csv('llm_analysis_results.csv', index=False)
 
     """with open(filename,'w',newline='',encoding='utf-8') as csvfile:
 
