@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import os
 import shutil
-import json
 from dotenv import load_dotenv
+
 from parser import extract_text_from_pdf, extract_text_from_docx
 from extractor import extract_contact_info
 from skills import extract_skills
@@ -26,6 +26,7 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+
     if 'jd_file' not in request.files or 'resume_file' not in request.files:
         return "Files are not uploaded", 400
 
@@ -41,9 +42,10 @@ def analyze():
     jd_file.save(jd_path)
     resume_file.save(resume_path)
 
-    jd_text = ""
-    with open(jd_path, 'r', encoding='utf-8') as f:
-        jd_text = f.read()
+    #traditional approach
+    jd_info = parse_job_description(jd_path)
+    if not jd_info["required_skills"]:
+        return "Unable to extract required skills from job description", 500
 
     resume_text = ""
     if resume_path.lower().endswith(".pdf"):
@@ -52,21 +54,25 @@ def analyze():
         resume_text = extract_text_from_docx(resume_path)
 
     if not resume_text:
-        return "Failed to extract text.", 500
+        return f"Failed to extract text from this resume: {resume_file.filename}", 500
 
     contact_info = extract_contact_info(resume_text)
     candidate_skills = extract_skills(resume_text)
-    match_score, matched_skills, missing_skills = calculate_match_score(candidate_skills, jd_text)
+    match_score, matched_skills, missing_skills = calculate_match_score(candidate_skills, jd_info)
+
+    #llm analysis approach
+    with open(jd_path, 'r', encoding='utf-8') as f:
+        jd_text = f.read()
+
     llm_analysis = analyze_with_llm(resume_text, jd_text)
 
-
-    shutil.rmtree(app.config['UPLOAD_FOLDER'])
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+    os.remove(jd_path)
+    os.remove(resume_path)
 
     results = {
         'filename': resume_file.filename,
-        'email': contact_info.get('email', 'N/A'),
-        'phone': contact_info.get('phone', 'N/A'),
+        'email': contact_info.get('email', 'Not Found'),
+        'phone': contact_info.get('phone', 'Not Found'),
         'traditional_analysis': {
             'match_score': match_score,
             'skills_found': candidate_skills,

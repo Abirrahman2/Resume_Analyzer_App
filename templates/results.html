@@ -2,9 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>i will implement this later</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
 </head>
 <body>
+    <h1>Analysis Results</h1>
 
+    <h2>Candidate's Information</h2>
+    <p><strong>Filename:</strong> {{ results.filename }}</p>
+    <p><strong>Email:</strong> {{ results.email }}</p>
+    <p><strong>Phone:</strong> {{ results.phone }}</p>
+
+    <hr>
+
+    <h2>Traditional Analysis</h2>
+    <p><strong>Match Score:</strong> {{ results.traditional_analysis.match_score }}%</p>
+    <p><strong>Skills Found:</strong> {{ results.traditional_analysis.skills_found | join(', ') }}</p>
+    <p><strong>Missing Skills:</strong> {{ results.traditional_analysis.missing_skills | join(', ') }}</p>
+
+    <hr>
+
+    <h2>LLM Analysis</h2>
+    {% if results.llm_analysis %}
+        <p><strong>Match Score:</strong> {{ results.llm_analysis.match_score }}%</p>
+        <p><strong>Summary:</strong> {{ results.llm_analysis.summary_explanation }}</p>
+        <p><strong>Strengths:</strong> {{ results.llm_analysis.strengths | join(', ') }}</p>
+        <p><strong>Weaknesses:</strong> {{ results.llm_analysis.weaknesses | join(', ') }}</p>
+    {% else %}
+        <p>LLM analysis was not available for technical error..</p>
+    {% endif %}
+
+    <a href="/">Run another analysis</a>
 </body>
 </html>
