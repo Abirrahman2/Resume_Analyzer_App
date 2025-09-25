@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer</title>
 </head>
 <body>
+    <h1>Resume Analyzer</h1>
+    <p>Upload a job description and a resume to get an AI-powered analysis.</p>
 
+    <form action="/analyze" method="post" enctype="multipart/form-data">
+        <label for="jd_file">Upload Job Description. Please upload only txt file:</label><br>
+        <input type="file" name="jd_file" id="jd_file" accept=".txt" required><br><br>
+
+        <label for="resume_file">Upload Resume (PDF or DOCX):</label><br>
+        <input type="file" name="resume_file" id="resume_file" accept=".pdf,.docx" required><br><br>
+
+        <input type="submit" value="Analyze Resume">
+    </form>
 </body>
 </html>
