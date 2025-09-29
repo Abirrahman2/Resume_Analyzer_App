@@ -17,4 +17,8 @@ This application is a full-stack web tool designed to streamline the recruitment
 ## Screenshots
 <img width="978" height="293" alt="resumeapp1" src="https://github.com/user-attachments/assets/d0ecbfd0-b79d-4ca7-bf39-b141dd5841e4" />
 <img width="953" height="220" alt="resumeapp2" src="https://github.com/user-attachments/assets/57bcec67-62fb-4c8f-b6ea-7750355fb5f7" />
+<<<<<<< HEAD
 <img width="926" height="529" alt="resumeapp3" src="https://github.com/user-attachments/assets/6dac2bd5-7ead-4b95-9709-2152e03ca758" />
+=======
+<img width="926" height="529" alt="resumeapp3" src="https://github.com/user-attachments/assets/6dac2bd5-7ead-4b95-9709-2152e03ca758" />
+>>>>>>> b5567ec845864fa6d1862d8096dae6e714b08014
