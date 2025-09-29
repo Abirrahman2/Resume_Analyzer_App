@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Analysis Results</title>
 </head>
 <body>
-    <h1>Analysis Results</h1>
+    <div class="container">
+        <h1>Analysis Results</h1>
 
     <h2>Candidate's Information</h2>
     <p><strong>Filename:</strong> {{ results.filename }}</p>
@@ -33,5 +35,6 @@
     {% endif %}
 
     <a href="/">Run another analysis</a>
+    </div>
 </body>
 </html>

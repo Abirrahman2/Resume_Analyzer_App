@@ -31,7 +31,7 @@ def analyze_with_llm(resume_text, jd_text):
     """
 
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')  # Or gemini-1.0-pro
+        model = genai.GenerativeModel('gemini-2.5-flash')  # Or gemini-1.0-pro
         response = model.generate_content(prompt)
 
         if not response.text:
