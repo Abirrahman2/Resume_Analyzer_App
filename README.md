@@ -15,5 +15,4 @@ This application is a full-stack web tool designed to streamline the recruitment
 * **Frontend:** HTML5 and CSS
 
 ## Screenshots
-![Screenshot of the analysis results page]
-(images/resumeapp1.png)
+![resumeapp1.png](images%2Fresumeapp1.png)
