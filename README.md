@@ -15,4 +15,3 @@ This application is a full-stack web tool designed to streamline the recruitment
 * **Frontend:** HTML5 and CSS
 
 ## Screenshots
-![Screenshot of the Resume Analyzer Form](images/resumeapp1.png)
