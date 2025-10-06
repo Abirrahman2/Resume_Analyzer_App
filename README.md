@@ -20,3 +20,7 @@ This application is a full-stack web tool designed to streamline the recruitment
 <img width="926" height="529" alt="resumeapp3" src="https://github.com/user-attachments/assets/6dac2bd5-7ead-4b95-9709-2152e03ca758" />
 
 ## Batch Analysis
+<img width="965" height="124" alt="1" src="https://github.com/user-attachments/assets/e84243e8-e7e8-4c18-bb15-947de772d29d" />
+<img width="898" height="939" alt="2" src="https://github.com/user-attachments/assets/b9012c99-8261-4524-bad1-77c5f2d2d5a0" />
+<img width="899" height="934" alt="3" src="https://github.com/user-attachments/assets/45544dfa-5ce8-4ce1-8904-61261b24e64f" />
+<img width="899" height="948" alt="4" src="https://github.com/user-attachments/assets/78a16a17-1765-4486-8b3b-0752c32af4f2" />
