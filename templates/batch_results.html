@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Analysis Results ({{ candidates | length }} Resumes)</h1>
+        <p>Sorted in Descending Order</p>
+
+        {% if not candidates %}
+            <p>No resumes were analyzed.</p>
+        {% endif %}
+
+        {% for result in candidates | sort(attribute='llm_analysis.match_score', reverse=True) %}
+            <div class="analysis-card">
+                <h2>File Info: {{ result.filename }}</h2>
+
+                {% if result.status != 'Analysis Successful' %}
+                    <p style="color: red;">Status: {{ result.status }}</p>
+                    <hr>
+                    <a href="/">Run another analysis</a>
+                {% else %}
+                    <p>
+                        <strong>LLM Match Score:</strong>
+                        <span class="score-display">{{ result.llm_analysis.match_score if result.llm_analysis else 'N/A' }}%</span>
+                    </p>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <h3>Traditional Analysis : </h3>
+                            <p><strong>Keyword Score:</strong> {{ result.traditional_analysis.match_score }}%</p>
+                            <p><strong>Skills Found:</strong> {{ result.traditional_analysis.skills_found | join(', ') if result.traditional_analysis.skills_found else 'None' }}</p>
+                            <p><strong>Missing Skills:</strong> {{ result.traditional_analysis.missing_skills | join(', ') if result.traditional_analysis.missing_skills else 'None' }}</p>
+                        </div>
+
+                        <div style="flex: 1;">
+                            <h3>LLM Analysis : </h3>
+                            <p><strong>Summary:</strong> {{ result.llm_analysis.summary_explanation if result.llm_analysis.summary_explanation else 'N/A' }}</p>
+                            <p><strong>Strengths:</strong> {{ result.llm_analysis.strengths | join(', ') if result.llm_analysis.strengths else 'N/A' }}</p> <p><strong>Weaknesses:</strong> {{ result.llm_analysis.weaknesses | join(', ') if result.llm_analysis.weaknesses else 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Contact:</strong> {{ result.email }} | {{ result.phone }}
+                    </p>
+                {% endif %}
+            </div>
+            <hr>
+        {% endfor %}
+
+        <a href="/">Run another analysis</a>
+    </div>
+</body>
+</html>

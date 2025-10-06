@@ -13,8 +13,9 @@ def parse_job_description(jd_path):
         with open(jd_path, 'r', encoding='utf-8') as f:
             jd_text = f.read().lower()
 
-            skills_section_match = re.search(r'required skills:(.*?)(required experience|education|responsibilities|$)',
-                                             jd_text, re.DOTALL)
+            skills_section_match = re.search(
+                r'required skills:(.*?)\s*(required experience|education|responsibilities|$)',
+                jd_text, re.DOTALL)
             if skills_section_match:
                 skills_text = skills_section_match.group(1).strip()
 

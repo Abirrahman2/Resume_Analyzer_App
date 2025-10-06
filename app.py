@@ -27,61 +27,73 @@ def index():
 @app.route('/analyze', methods=['POST'])
 def analyze():
 
-    if 'jd_file' not in request.files or 'resume_file' not in request.files:
-        return "Files are not uploaded", 400
+    jd_file =request.files.get('jd_file')
+    resume_files=request.files.getlist('resume_file')
 
-    jd_file = request.files['jd_file']
-    resume_file = request.files['resume_file']
-
-    if jd_file.filename == '' or resume_file.filename == '':
-        return "File name is empty", 400
+    if not jd_file or not resume_files or jd_file.filename == '' or not resume_files[0].filename:
+        return "Please upload one Job Description and at least one Resume.", 400
 
     jd_path = os.path.join(app.config['UPLOAD_FOLDER'], jd_file.filename)
-    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], resume_file.filename)
-
     jd_file.save(jd_path)
-    resume_file.save(resume_path)
+
 
     #traditional approach
     jd_info = parse_job_description(jd_path)
     if not jd_info["required_skills"]:
+        os.remove(jd_path)
         return "Unable to extract required skills from job description", 500
 
-    resume_text = ""
-    if resume_path.lower().endswith(".pdf"):
-        resume_text = extract_text_from_pdf(resume_path)
-    elif resume_path.lower().endswith(".docx"):
-        resume_text = extract_text_from_docx(resume_path)
-
-    if not resume_text:
-        return f"Failed to extract text from this resume: {resume_file.filename}", 500
-
-    contact_info = extract_contact_info(resume_text)
-    candidate_skills = extract_skills(resume_text)
-    match_score, matched_skills, missing_skills = calculate_match_score(candidate_skills, jd_info)
-
-    #llm analysis approach
     with open(jd_path, 'r', encoding='utf-8') as f:
         jd_text = f.read()
-
-    llm_analysis = analyze_with_llm(resume_text, jd_text)
-
     os.remove(jd_path)
-    os.remove(resume_path)
+    all_candidate_results = []
+    for resume_file in resume_files:
+        if resume_file.filename == '':
+            continue
+        safe_filename=os.path.basename(resume_file.filename)
+        resume_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
+        resume_file.save(resume_path)
 
-    results = {
-        'filename': resume_file.filename,
-        'email': contact_info.get('email', 'Not Found'),
-        'phone': contact_info.get('phone', 'Not Found'),
-        'traditional_analysis': {
-            'match_score': match_score,
-            'skills_found': candidate_skills,
-            'missing_skills': missing_skills,
-        },
-        'llm_analysis': llm_analysis if llm_analysis else {}
-    }
 
-    return render_template('results.html', results=results)
+        resume_text = ""
+        if resume_path.lower().endswith(".pdf"):
+            resume_text = extract_text_from_pdf(resume_path)
+        elif resume_path.lower().endswith(".docx"):
+            resume_text = extract_text_from_docx(resume_path)
+
+        if not resume_text:
+
+            os.remove(resume_path)
+            all_candidate_results.append({
+                'filename': resume_file.filename,
+                'status': 'Failed to extract text.'
+            })
+            continue
+
+        # Traditional Analysis
+        contact_info = extract_contact_info(resume_text)
+        candidate_skills = extract_skills(resume_text)
+        match_score, matched_skills, missing_skills = calculate_match_score(candidate_skills, jd_info)
+
+        # LLM Analysis
+        llm_analysis = analyze_with_llm(resume_text, jd_text)
+
+        candidate_result = {
+            'filename': resume_file.filename,
+            'status': 'Analysis Successful',
+            'email': contact_info.get('email', 'N/A'),
+            'phone': contact_info.get('phone', 'N/A'),
+            'traditional_analysis': {
+                'match_score': match_score,
+                'skills_found': candidate_skills,
+                'missing_skills': missing_skills,
+            },
+            'llm_analysis': llm_analysis if llm_analysis else {}
+        }
+        all_candidate_results.append(candidate_result)
+        os.remove(resume_path)
+
+    return render_template('batch_results.html', candidates=all_candidate_results)
 
 
 if __name__ == '__main__':
